@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Will You Be My Valentine?</title>
+        <link rel="stylesheet" href="styles.css">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div id="screen-1" class="screen-active">
+            <h1>Hi! What's your name again...?</h1>
+            <input type="text" id="name-input" placeholder="Your name" autocomplete="off">
+            <button class="btn-primary" onclick="goToScreen2()">Submit</button>
+        </div>
+
+        <div id="screen2" class="screen-hidden">
+            <h1></h1>
+        </div>
+    </body>
+</html>
