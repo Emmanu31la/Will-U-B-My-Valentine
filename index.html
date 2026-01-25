@@ -15,7 +15,39 @@
         </div>
 
         <div id="screen2" class="screen-hidden">
-            <h1></h1>
+            <h1>Oh! Hey, <span id="display-name"></span>! What's your gender again..?</h1>
+            <div class="gender-container">
+                <div class="gender-card" onclick="selectGender('female')">
+                    <img src="mages/female_0.png" alt="Female" class="gender-icon">
+                    <p>Female</p>
+                </div>
+
+                <div class="gender-card" onclick="selectGender('male')">
+                    <img src="images/male_0.png" alt="Male" class="gender-icon">
+                    <p>Male</p>
+                </div>
+
+                <div class="gender-card" onclick="selectGender('nb')">
+                    <img src="images/non_binary_0.png" alt="Non-binary" class="gender-icon">
+                    <p>Non-binary</p>
+                </div>
+            </div>
         </div>
+
+        <div id="screen-3" class="screen-hidden">
+            <h1 id="main-text">Will You Be My Valentine..?</h1>
+
+            <div class="character-box">
+                <img id="character-img" src="NULL" alt="Character" class="wiggle">
+            </div>
+
+            <div class="button-container">
+                <button id="yes-btn" class="btn-yes" onclick="handleYes()">YES!</button>
+                <button id="no-btn" class="btn-no" onclick="handleNo()">No..</button>
+            </div>
+        </div>
+
+        <audio id="click-sound" src="sound.mp3"></audio>
+        <script src="script.js"></script>
     </body>
 </html>
