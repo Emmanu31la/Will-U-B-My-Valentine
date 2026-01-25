@@ -1,0 +1,155 @@
+:root {
+    --bg-pink: #ffc0bc;
+    --btn-pink: #ff69b4;
+    --btn-blue: #57cefa;
+    --text-color: #d63384;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'fredoka', sans-serif;
+    background-color: var(--bg-pink);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    text-align: center;
+}
+
+h1 {
+    color: var(--text-color);
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 0 #fff;
+}
+
+.screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 600px;
+    transition: opacity 0.5s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+input {
+    padding: 15px;
+    border-radius: 20px;
+    border: 3px solid #fff;
+    font-size: 1.2rem;
+    outline: none;
+    text-align: center;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: var(--btn-pink);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #c71585;
+    transition: transform 0.1s;
+    font-family: 'fredoka', sans-serif;
+}
+
+.btn-primary:active {
+    transform: translateY(4px);
+    box-shadow: 0 6px 0 #c71585;
+}
+
+.gender-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.gender-card {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.gender-card:hover {
+    transform: scale(1.1);
+    border-color: var(--btn-blue);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.gender-icon {
+    width: 100px;
+    height: auto;
+}
+
+.button-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-yes {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #1e7e34;
+    transition: all 0.3s ease;
+    font-family: 'fredoka', sans-serif;
+}
+
+.btn-no {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #bd2130;
+    font-family: 'Fredoka', sans-serif;
+}
+
+#character-image {
+    width: 250px;
+    max-width: 80vw;
+    height: auto;
+    transition: src 0.2s ease;
+}
+
+@keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.wiggle {
+    animation: wiggle 2s infinite ease-in-out;
+}
+
+@media (max-width: 600px) {
+    .gender-container {
+        flex-direction: column;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+}
