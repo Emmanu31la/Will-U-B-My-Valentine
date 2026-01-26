@@ -1,5 +1,3 @@
-const { use } = require("react");
-
 const messages = [
     "Will you be my valentine?",    // Stage 0
     "Will you 'PLEASEEE' be my valentine?",  // Stage 1
@@ -14,7 +12,7 @@ const messages = [
 
 // -----STATE VARIABLES-----
 let userName = "";
-let selectGender = "";
+let selectedGender = "";
 let noCount = 0;
 const maxStages = 8;
 
@@ -69,12 +67,14 @@ function handleYes() {
     playClickSound();
 
     // Change to Yes State
-    const imageElement = document.getElementById("character-img");
+    const imgElement = document.getElementById("character-img");
     const textElement = document.getElementById("main-text");
+    const yesBtn = document.getElementById("yes-btn");
+    const noBtn = document.getElementById("no-btn");
    // const buttonContainer = document.querySelector(".button-container");
 
-   document.getElementById("yes-btn").classList.add("hidden");
-   document.getElementById("no-btn").classList.add("hidden");
+    yesBtn.classList.add("hidden");
+   noBtn.classList.add("hidden");
 
     // Update Image and Text
     imgElement.src = `images/${selectedGender}_yes.png`;
@@ -107,7 +107,14 @@ function resetGame() {
 function updateGameUI() {
     // format: images/male_0.png, female_3.png, etc.
     const imgElement = document.getElementById("character-img");
+    const textElement = document.getElementById("main-text");
+    const yesBtn = document.getElementById("yes-btn");
+    const noBtn = document.getElementById("no-btn");
+    const resetBtn = document.getElementById("reset-btn");
+
+
     imgElement.src = `images/${selectGender}_${noCount}.png`;
+    textElement.innerText = messages[noCount];
 
     if (noCount === maxStages) {
         // Hide Yes/No, Show Reset
@@ -120,15 +127,15 @@ function updateGameUI() {
         yesBtn.style.transform = `scale(${currentScale})`;
     }
     // Update header Text
-    const textElement = document.getElementById("main-text");
-    textElement.innerText = messages[noCount];
+    
+    
 
     // make yes button bigger
-    const yesBtn = document.getElementById("yes-btn");
+    
 
     // Formula: Base size (1) + (Number of clicks * 0.4)
     // It will grow 40% bigger each time
-    const currentScale = 1 + (noCount * 0.4);
-
-    yesBtn.style.transform = `scale(${currentScale})`;
+    //const currentScale = 1 + (noCount * 0.4);
+    //yesBtn.style.transform = `scale(${currentScale})`;
 }
+    
