@@ -14,7 +14,7 @@
             <button class="btn-primary" onclick="goToScreen2()">Submit</button>
         </div>
 
-        <div id="screen2" class="screen-hidden">
+        <div id="screen-2" class="screen-hidden">
             <h1>Oh! Hey, <span id="display-name"></span>! What's your gender again..?</h1>
             <div class="gender-container">
                 <div class="gender-card" onclick="selectGender('female')">
@@ -38,12 +38,13 @@
             <h1 id="main-text">Will You Be My Valentine..?</h1>
 
             <div class="character-box">
-                <img id="character-img" src="Character1-1.png!" alt="Character" class="wiggle">
+                <img id="character-img" src="Character1-1.png" alt="Character" class="wiggle">
             </div>
 
             <div class="button-container">
                 <button id="yes-btn" class="btn-yes" onclick="handleYes()">YES!</button>
                 <button id="no-btn" class="btn-no" onclick="handleNo()">No..</button>
+                <button id="reset-btn" class="btn-primary hidden" onclick="resetGame()">Back to Start ↺</button>
             </div>
         </div>
 

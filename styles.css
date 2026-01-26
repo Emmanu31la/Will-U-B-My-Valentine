@@ -94,11 +94,13 @@ input {
 }
 
 .button-container {
+    position: relative;
     margin-top: 20px;
     display: flex;
     gap: 20px;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .btn-yes {
@@ -112,6 +114,8 @@ input {
     box-shadow: 0 5px 0 #1e7e34;
     transition: all 0.3s ease;
     font-family: 'fredoka', sans-serif;
+    z-index: 1;
+    position: relative;
 }
 
 .btn-no {
@@ -124,6 +128,16 @@ input {
     cursor: pointer;
     box-shadow: 0 5px 0 #bd2130;
     font-family: 'Fredoka', sans-serif;
+    z-index: 10;
+    position: relative;
+}
+
+#reset-btn {
+    background-color: var(--btn-blue);
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    box-shadow: 0 5px 0 #4682b4;
 }
 
 #character-image {
