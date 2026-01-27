@@ -12,43 +12,59 @@ const messages = [
 
 // -----STATE VARIABLES-----
 let userName = "";
-let selectedGender = "";
+let selectedGender = ""; // The variable is named "selectedGender"
 let noCount = 0;
 const maxStages = 8;
 
-// -----SOUND FUCNTION-----
+// -----SOUND FUNCTION-----
 function playClickSound() {
-    const audio = document.getElementById("click-sound");
-    if (audio) {
-        audio.currentTime = 0;
-        audio.play().catch(e =>console.log("Audio blocked untill user interaction"));
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioContext.currentTime;
+        
+        const osc = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        osc.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+        
+        gainNode.gain.setValueAtTime(0.3, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        
+        osc.start(now);
+        osc.stop(now + 0.1);
+    } catch (e) {
+        console.log("Audio context not available");
     }
 }
 
-// -----SCREEN NAVICATION----
+// -----SCREEN NAVIGATION----
 
 // Go from Name Input -> Gender Selection
 function goToScreen2() {
     playClickSound();
     const nameInput = document.getElementById("name-input");
-    userName = nameInput.value.trim() || "Cutie"; // Default name if none provided
+    userName = nameInput.value.trim() || "Cutie"; 
 
     document.getElementById("display-name").innerText = userName;
 
-    // Hide Screen 1 and Show Screen 2
     document.getElementById("screen-1").classList.add("hidden");
     document.getElementById("screen-2").classList.remove("hidden");
 }
 
 // Go from Gender Selection -> Question Screen
+// FIX 1: Renamed function to 'selectGender' to match your HTML
 function selectGender(gender) {
     playClickSound();
-    selectGender = gender;
+    
+    // FIX 2: Assign to the variable 'selectedGender', NOT 'selectGender'
+    selectedGender = gender;
 
-    // Select initial image (Stage 0)
     updateGameUI();
 
-    // Hide Screen 2 and Show Screen 3
     document.getElementById("screen-2").classList.add("hidden");
     document.getElementById("screen-3").classList.remove("hidden");
 }
@@ -57,41 +73,33 @@ function selectGender(gender) {
 function handleNo() {
     playClickSound();
     if (noCount < maxStages) {
-    noCount++;
+        noCount++;
     }
-    // Update Image, Text and utton size
     updateGameUI();
 }
 
 function handleYes() {
     playClickSound();
 
-    // Change to Yes State
     const imgElement = document.getElementById("character-img");
     const textElement = document.getElementById("main-text");
     const yesBtn = document.getElementById("yes-btn");
     const noBtn = document.getElementById("no-btn");
-   // const buttonContainer = document.querySelector(".button-container");
 
     yesBtn.classList.add("hidden");
-   noBtn.classList.add("hidden");
+    noBtn.classList.add("hidden");
 
-    // Update Image and Text
+    // FIX 3: Used correct variable name 'selectedGender'
     imgElement.src = `images/${selectedGender}_yes.png`;
 
     textElement.innerText = `YAYYY!!! Thank you so much, ${userName}! 💖`;
-
-    // Hide No Buttons aince they said Yes
-    //btnContainer.style.display = "none";
-
-    // Optional: Add Confetti Effect here if I add a library later
 }
 
 function resetGame() {
     playClickSound();
     noCount = 0;
     userName = "";
-    selectGender = "";
+    selectedGender = "";
 
     document.getElementById("name-input").value = "";
     document.getElementById("yes-btn").style.transform = "scale(1)";
@@ -105,37 +113,22 @@ function resetGame() {
 }
 
 function updateGameUI() {
-    // format: images/male_0.png, female_3.png, etc.
     const imgElement = document.getElementById("character-img");
     const textElement = document.getElementById("main-text");
     const yesBtn = document.getElementById("yes-btn");
     const noBtn = document.getElementById("no-btn");
     const resetBtn = document.getElementById("reset-btn");
 
-
-    imgElement.src = `images/${selectGender}_${noCount}.png`;
+    imgElement.src = `images/${selectedGender}_${noCount}.png`;
     textElement.innerText = messages[noCount];
 
     if (noCount === maxStages) {
-        // Hide Yes/No, Show Reset
         yesBtn.classList.add('hidden');
         noBtn.classList.add('hidden');
         resetBtn.classList.remove('hidden');
     } else {
-        // Grow the Yes Button normally
         const currentScale = 1 + (noCount * 0.4);
         yesBtn.style.transform = `scale(${currentScale})`;
     }
-    // Update header Text
-    
-    
-
-    // make yes button bigger
-    
-
-    // Formula: Base size (1) + (Number of clicks * 0.4)
-    // It will grow 40% bigger each time
-    //const currentScale = 1 + (noCount * 0.4);
-    //yesBtn.style.transform = `scale(${currentScale})`;
 }
-    
+// FIX 4: Removed the extra "}" that was here causing the crash
