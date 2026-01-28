@@ -131,4 +131,23 @@ function updateGameUI() {
         yesBtn.style.transform = `scale(${currentScale})`;
     }
 }
-// FIX 4: Removed the extra "}" that was here causing the crash
+
+// ----- PRELOAD IMAGES FUNCTION -----
+(function preloadAllImages() {
+    const genders = ["male", "female", "nb"];
+    const maxStages = 8; // The highest number in your files (0 to 8)
+    
+    genders.forEach(gender => {
+        // 1. Preload the "No" sequence (0 to 8)
+        for (let i = 0; i <= maxStages; i++) {
+            const img = new Image();
+            img.src = `images/${gender}_${i}.png`;
+        }
+
+        // 2. Preload the "Yes" image
+        const yesImg = new Image();
+        yesImg.src = `images/${gender}_yes.png`;
+    });
+    
+    console.log("All character images preloaded!");
+})();
