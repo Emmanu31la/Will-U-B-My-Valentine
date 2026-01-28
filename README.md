@@ -50,7 +50,7 @@ If they click Yes, you get a notification!
 If they click No, the character reacts with increasing sadness until... well, you'll see.
 
 🌐 Live Demo
-Check out the live version here: [Link to your GitHub Pages]
+Check out the live version here: https://emmanu31la.github.io/Will-U-B-My-Valentine/
 
 🤝 Credits
 Developer: Emma
