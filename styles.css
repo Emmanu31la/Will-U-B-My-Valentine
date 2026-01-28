@@ -172,3 +172,12 @@ input {
         font-size: 1.8rem;
     }
 }
+
+#link-result {
+    margin-top: 20px;
+}
+#generated-link {
+    font-size: 0.9rem; 
+    width: 100%;
+    margin-bottom: 10px;
+}

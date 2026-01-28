@@ -8,7 +8,24 @@
         <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     </head>
     <body>
-        <div id="screen-1" class="screen">
+
+        <div id="screen-0" class="screen">
+            <h1>Create Your Valentine Link 💌</h1>
+            <p style="color: #d63384; font-size: 1.2rem; margin-bottom: 20px;">
+                Click below to create a magic link. <br>
+                <strong>Keep this tab open</strong> to get notified when they reply!
+            </p>
+            
+            <button id="setup-btn" class="btn-primary" onclick="startListening()">Create & Notify Me</button>
+            
+            <div id="link-result" class="hidden">
+                <p>Send this link to your Valentine:</p>
+                <input type="text" id="generated-link" readonly>
+                <button class="btn-primary" style="background-color: #28a745;" onclick="copyLink()">Copy Link</button>
+            </div>
+        </div>
+
+        <div id="screen-1" class="screen hidden">
             <h1>Hi! What's your name again...?</h1>
             <input type="text" id="name-input" placeholder="Your name" autocomplete="off">
             <button class="btn-primary" onclick="goToScreen2()">Submit</button>
