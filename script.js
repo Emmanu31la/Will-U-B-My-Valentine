@@ -21,36 +21,37 @@ let myTopicID = "";
 const maxStages = 8;
 let notificationSent = false; 
 
-// ----- ON LOAD: CHECK URL & MEMORY -----
-window.onload = function() {
+// ----- FIX 1: USE DOMContentLoaded (Loads instantly) -----
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Check if there is a topic in the URL
     const urlParams = new URLSearchParams(window.location.search);
     const topicParam = urlParams.get('topic'); 
 
     if (topicParam) {
         // --- RECIPIENT MODE ---
-        // The user clicked a link sent to them
         myTopicID = topicParam;
+        
+        // INSTANTLY hide Screen 0 and show Screen 1
         document.getElementById("screen-0").classList.add("hidden");
         document.getElementById("screen-1").classList.remove("hidden");
     } else {
         // --- SENDER MODE ---
-        // Check if we already created a link before (Persistence Fix)
         const savedTopic = localStorage.getItem("valentine_topic_id");
         
         if (savedTopic) {
-            // Restore the previous session!
             myTopicID = savedTopic;
             showLinkScreen(savedTopic);
-            startListening(true); // true = skip permission request for now
+            startListening(true); 
         } else {
-            // New user
             document.getElementById("screen-0").classList.remove("hidden");
             document.getElementById("screen-1").classList.add("hidden");
         }
     }
     
+    // Start downloading images in the background AFTER showing the screen
     preloadAllImages();
-};
+});
 
 // ----- SENDER LOGIC (SCREEN 0) -----
 
@@ -60,7 +61,7 @@ function startListening(isRestoring = false) {
     if ("Notification" in window) {
         Notification.requestPermission().then(permission => {
             if (!isRestoring) generateLinkAndListen();
-            else connectToEventSource(); // Just reconnect if restoring
+            else connectToEventSource(); 
         });
     } else {
         if (!isRestoring) generateLinkAndListen();
@@ -69,35 +70,46 @@ function startListening(isRestoring = false) {
 }
 
 function generateLinkAndListen() {
-    // Generate a random ID
     const randomID = Math.floor(Math.random() * 1000000);
     myTopicID = `valentine_app_${randomID}`;
-
-    // SAVE IT TO MEMORY (Fix for refresh issue)
     localStorage.setItem("valentine_topic_id", myTopicID);
 
-    showLinkScreen(myTopicID);
+    // ----- FIX 2: PREVENT GITHUB REDIRECT BUGS -----
+    const url = new URL(window.location.href);
+    // If path doesn't end in / and isn't a file, add / to stop redirect stripping params
+    if (!url.pathname.endsWith('/') && !url.pathname.includes('.')) {
+        url.pathname += '/';
+    }
+    url.searchParams.set('topic', myTopicID);
+    const magicLink = url.toString();
+    // -----------------------------------------------
+
+    document.getElementById("generated-link").value = magicLink;
+    document.getElementById("link-result").classList.remove("hidden");
+    document.getElementById("setup-btn").classList.add("hidden");
+
     connectToEventSource();
 }
 
 function showLinkScreen(topicID) {
-    const baseUrl = window.location.href.split('?')[0];
-    const magicLink = `${baseUrl}?topic=${topicID}`;
+    // Reconstruct the link for the UI
+    const url = new URL(window.location.href);
+    if (!url.pathname.endsWith('/') && !url.pathname.includes('.')) {
+        url.pathname += '/';
+    }
+    url.searchParams.set('topic', topicID);
     
-    document.getElementById("generated-link").value = magicLink;
+    document.getElementById("generated-link").value = url.toString();
     document.getElementById("link-result").classList.remove("hidden");
     document.getElementById("setup-btn").classList.add("hidden");
 }
 
 function connectToEventSource() {
-    // Connect to ntfy server
     console.log("Listening on topic:", myTopicID);
     const eventSource = new EventSource(`${NTFY_BASE_URL}/${myTopicID}/sse`);
     
     eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data); 
-        
-        // Only notify if it's a specific user action
         if (data.message && (data.message.includes("YES") || data.message.includes("heart"))) {
             showSystemNotification("💌 UPDATE!", data.message);
         }
@@ -105,12 +117,8 @@ function connectToEventSource() {
 }
 
 function showSystemNotification(title, body) {
-    // Try to play sound
     playClickSound();
-
-    // Try to show visual popup
     if (Notification.permission === "granted") {
-        // Mobile browsers often require the page to be VISIBLE for this to work
         new Notification(title, { body: body, icon: "images/female_yes.png" });
     } else {
         alert(`${title}\n${body}`);
@@ -139,9 +147,7 @@ function playClickSound() {
         gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
         osc.start(now);
         osc.stop(now + 0.1);
-    } catch (e) {
-        // Silent fail if audio not allowed
-    }
+    } catch (e) { }
 }
 
 // ----- GAME NAVIGATION -----
@@ -167,14 +173,10 @@ function selectGender(gender) {
 
 function handleNo() {
     playClickSound();
-    
     if (noCount < maxStages) {
         noCount++;
     }
-    
     updateGameUI();
-
-    // If final stage reached, send notification
     if (noCount === maxStages) {
         sendNtfyNotification(false);
     }
@@ -182,7 +184,6 @@ function handleNo() {
 
 function handleYes() {
     playClickSound();
-    
     const imgElement = document.getElementById("character-img");
     const textElement = document.getElementById("main-text");
     const yesBtn = document.getElementById("yes-btn");
@@ -234,7 +235,6 @@ function resetGame() {
     document.getElementById("screen-1").classList.remove("hidden");
 }
 
-// ----- SENDING NOTIFICATION LOGIC -----
 function sendNtfyNotification(accepted) {
     if (!myTopicID || notificationSent) return;
 
@@ -263,7 +263,6 @@ function sendNtfyNotification(accepted) {
     .catch(err => console.error("Error:", err));
 }
 
-// ----- PRELOAD IMAGES -----
 function preloadAllImages() {
     const genders = ["male", "female", "nb"];
     const max = 8;
