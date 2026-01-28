@@ -10,7 +10,7 @@ const messages = [
     "Think about the flowers! Pleasssseeeee???", 
     "You're killing me here... Please be my Valentime..?",  
     "I'll DIE if you don't say yes! Please say YES!",  
-    "Dies of heartbreak 💀"    
+    "Dies of heartbreak"    
 ];
 
 // -----STATE VARIABLES-----
@@ -21,68 +21,97 @@ let myTopicID = "";
 const maxStages = 8;
 let notificationSent = false; 
 
-// ----- ON LOAD: CHECK URL -----
+// ----- ON LOAD: CHECK URL & MEMORY -----
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const topicParam = urlParams.get('topic'); 
 
     if (topicParam) {
-        // RECIPIENT MODE
+        // --- RECIPIENT MODE ---
+        // The user clicked a link sent to them
         myTopicID = topicParam;
         document.getElementById("screen-0").classList.add("hidden");
         document.getElementById("screen-1").classList.remove("hidden");
     } else {
-        // SENDER MODE
-        document.getElementById("screen-0").classList.remove("hidden");
-        document.getElementById("screen-1").classList.add("hidden");
+        // --- SENDER MODE ---
+        // Check if we already created a link before (Persistence Fix)
+        const savedTopic = localStorage.getItem("valentine_topic_id");
+        
+        if (savedTopic) {
+            // Restore the previous session!
+            myTopicID = savedTopic;
+            showLinkScreen(savedTopic);
+            startListening(true); // true = skip permission request for now
+        } else {
+            // New user
+            document.getElementById("screen-0").classList.remove("hidden");
+            document.getElementById("screen-1").classList.add("hidden");
+        }
     }
     
     preloadAllImages();
 };
 
-// ----- SENDER LOGIC -----
+// ----- SENDER LOGIC (SCREEN 0) -----
 
-function startListening() {
-    playClickSound();
+function startListening(isRestoring = false) {
+    if (!isRestoring) playClickSound();
 
     if ("Notification" in window) {
         Notification.requestPermission().then(permission => {
-            generateLinkAndListen();
+            if (!isRestoring) generateLinkAndListen();
+            else connectToEventSource(); // Just reconnect if restoring
         });
     } else {
-        generateLinkAndListen();
+        if (!isRestoring) generateLinkAndListen();
+        else connectToEventSource();
     }
 }
 
 function generateLinkAndListen() {
+    // Generate a random ID
     const randomID = Math.floor(Math.random() * 1000000);
     myTopicID = `valentine_app_${randomID}`;
 
+    // SAVE IT TO MEMORY (Fix for refresh issue)
+    localStorage.setItem("valentine_topic_id", myTopicID);
+
+    showLinkScreen(myTopicID);
+    connectToEventSource();
+}
+
+function showLinkScreen(topicID) {
     const baseUrl = window.location.href.split('?')[0];
-    const magicLink = `${baseUrl}?topic=${myTopicID}`;
+    const magicLink = `${baseUrl}?topic=${topicID}`;
     
     document.getElementById("generated-link").value = magicLink;
     document.getElementById("link-result").classList.remove("hidden");
     document.getElementById("setup-btn").classList.add("hidden");
+}
 
-    // START LISTENING
+function connectToEventSource() {
+    // Connect to ntfy server
+    console.log("Listening on topic:", myTopicID);
     const eventSource = new EventSource(`${NTFY_BASE_URL}/${myTopicID}/sse`);
     
     eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data); 
         
-        if (data.message.includes("YES")) {
-            showSystemNotification("💖 THEY SAID YES!", data.message);
-        } else if (data.message.includes("heart")) {
-            showSystemNotification("💀 Bad News...", data.message);
+        // Only notify if it's a specific user action
+        if (data.message && (data.message.includes("YES") || data.message.includes("heart"))) {
+            showSystemNotification("💌 UPDATE!", data.message);
         }
     };
 }
 
 function showSystemNotification(title, body) {
+    // Try to play sound
     playClickSound();
+
+    // Try to show visual popup
     if (Notification.permission === "granted") {
-        new Notification(title, { body: body });
+        // Mobile browsers often require the page to be VISIBLE for this to work
+        new Notification(title, { body: body, icon: "images/female_yes.png" });
     } else {
         alert(`${title}\n${body}`);
     }
@@ -111,7 +140,7 @@ function playClickSound() {
         osc.start(now);
         osc.stop(now + 0.1);
     } catch (e) {
-        console.log("Audio context not available");
+        // Silent fail if audio not allowed
     }
 }
 
@@ -139,15 +168,13 @@ function selectGender(gender) {
 function handleNo() {
     playClickSound();
     
-    // 1. Increment Sadness
     if (noCount < maxStages) {
         noCount++;
     }
     
-    // 2. Update the Screen
     updateGameUI();
 
-    // If we reached the final stage (8), send the notification immediately.
+    // If final stage reached, send notification
     if (noCount === maxStages) {
         sendNtfyNotification(false);
     }
@@ -181,12 +208,10 @@ function updateGameUI() {
     textElement.innerText = messages[noCount];
 
     if (noCount === maxStages) {
-        // Hide Buttons, Show Reset
         yesBtn.classList.add('hidden');
         noBtn.classList.add('hidden');
         resetBtn.classList.remove('hidden');
     } else {
-        // Grow Yes Button
         const currentScale = 1 + (noCount * 0.4);
         yesBtn.style.transform = `scale(${currentScale})`;
     }
@@ -197,7 +222,7 @@ function resetGame() {
     noCount = 0;
     userName = "";
     selectedGender = "";
-    notificationSent = false; // Reset the notification blocker
+    notificationSent = false; 
 
     document.getElementById("name-input").value = "";
     document.getElementById("yes-btn").style.transform = "scale(1)";
@@ -214,8 +239,7 @@ function sendNtfyNotification(accepted) {
     if (!myTopicID || notificationSent) return;
 
     notificationSent = true; 
-    console.log("Sending Notification... Accepted:", accepted); // Debug line
-
+    
     let messageText = "";
     let tags = [];
     
@@ -235,8 +259,8 @@ function sendNtfyNotification(accepted) {
             "Tags": tags.join(",")
         }
     })
-    .then(response => console.log("Notification sent successfully!"))
-    .catch(err => console.error("Could not send notification", err));
+    .then(response => console.log("Notification sent!"))
+    .catch(err => console.error("Error:", err));
 }
 
 // ----- PRELOAD IMAGES -----
